@@ -14,7 +14,7 @@ class Validator(object):
         self.frame_xml.pack(fill=BOTH, expand=True, side=TOP)
         self.text=Text(self.frame_xml)
         self.text.pack(fill=BOTH, expand=True, side=LEFT)
-        self.text.insert(END, "Put your XML here")
+        self.text.insert(END, "<?xml version=\"1.0\"?>\n")
         self.btn_validate=Button(self.frame_xml, text="VALIDATE")
         self.btn_validate.pack(fill=X, expand=True, side=LEFT)
         self.btn_validate.bind("<Button-1>", self.validate)
@@ -24,9 +24,17 @@ class Validator(object):
         self.report.pack(side=TOP, expand=True, fill=BOTH)
         self.report.insert(END, "Reports")
     def validate(self, event):
-        print("Validating")
         text=self.text.get(1.0, END)
-        print (text)
+        self.report.delete(1.0, END)
+        try:
+            root_element=etree.fromstring(text)
+        except Exception as e:
+            print("Error")
+            self.report.insert(END, str(e) )
+            return
+        self.report.insert(END, "XML procesado sin errores")
+        
+        
         
     def start(self):
         self.main_window.mainloop()
