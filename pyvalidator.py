@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 #coding=utf-8
-import Stringi
 from tkinter import *
 from tkinter.ttk import *
 from lxml import etree
+from io import StringIO
 
 DTD_INICIAL="""
 <!DOCTYPE listaclientes [
@@ -55,9 +55,17 @@ class Validator(object):
         self.report.delete(1.0, END)
         try:
             #root_element=etree.fromstring(text)
-            dtd=etree.DTD(texto_dtd)
-            parser=etree.XMLParser(dtd_validation=True)
-            print("Ok")
+            dtd=etree.DTD(StringIO(texto_dtd))
+            xml=etree.XML(text)
+            print(dtd.validate(xml))
+            if dtd.validate(xml):
+                self.report.insert(END, "XML procesado sin errores")
+                return 
+            else:
+                for e in dtd.error_log.filter_from_errors():
+                    self.report.insert(END, str(e))
+                    self.report.insert(END, "\n")
+            return 
         except Exception as e:
             self.report.insert(END, str(e) )
             return
