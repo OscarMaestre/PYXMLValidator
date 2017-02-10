@@ -5,14 +5,11 @@ from tkinter.ttk import *
 from lxml import etree
 from io import StringIO
 
-DTD_INICIAL="""
-<!DOCTYPE listaclientes [
-   <!ELEMENT listaclientes (cliente+)>
-   <!ELEMENT cliente (cif, nombre, diasentrega?)>
-   <!ELEMENT cif (#PCDATA)>
-   <!ELEMENT nombre (#PCDATA)>
-   <!ELEMENT diasentrega (#PCDATA)>
-]>
+DTD_INICIAL="""<!ELEMENT listaclientes (cliente+)>
+<!ELEMENT cliente (cif, nombre, diasentrega?)>
+<!ELEMENT cif (#PCDATA)>
+<!ELEMENT nombre (#PCDATA)>
+<!ELEMENT diasentrega (#PCDATA)>
 """
 INICIAL="""<?xml version="1.0"?>
 <listaclientes>
@@ -30,19 +27,20 @@ INICIAL="""<?xml version="1.0"?>
 class Validator(object):
     def __init__(self):
         self.main_window=Tk()
-        self.main_window.geometry("800x480+100+100")
+        self.main_window.attributes("-zoomed", True)
+        self.main_window.title("Validador XML")
         self.buildUI()
     def buildUI(self):
         self.frame_xml=Frame(self.main_window)
         self.frame_xml.pack(fill=BOTH, expand=True, side=TOP)
         self.dtd=Text(self.frame_xml, width=50, height=30)
-        self.dtd.pack(fill=BOTH, expand=True, side=LEFT)
+        self.dtd.pack(fill=BOTH, expand=True,  side=LEFT)
         self.text=Text(self.frame_xml, width=50, height=30)
-        self.text.pack(fill=BOTH, expand=True, side=LEFT)
+        self.text.pack(fill=BOTH,  expand=True, side=LEFT)
         self.text.insert(END, INICIAL)
         self.dtd.insert(END, DTD_INICIAL)
-        self.btn_validate=Button(self.frame_xml, text="VALIDATE")
-        self.btn_validate.pack(fill=X, expand=True, side=LEFT)
+        self.btn_validate=Button(self.frame_xml, text="Validar")
+        self.btn_validate.pack(fill=X,expand=True,  side=LEFT)
         self.btn_validate.bind("<Button-1>", self.validate)
         self.label=Label(self.main_window,text="Messages")
         self.label.pack(side=TOP)
@@ -57,7 +55,6 @@ class Validator(object):
             #root_element=etree.fromstring(text)
             dtd=etree.DTD(StringIO(texto_dtd))
             xml=etree.XML(text)
-            print(dtd.validate(xml))
             if dtd.validate(xml):
                 self.report.insert(END, "XML procesado sin errores")
                 return 
