@@ -34,6 +34,18 @@ DTD_INICIAL="""
 INICIAL="""
 <a>no int</a>
 """
+
+
+DTD_INICIAL="""<xsl:stylesheet version="1.0"
+     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+     <xsl:template match="/">
+         <foo><xsl:value-of select="/a/b/text()" /></foo>
+     </xsl:template>
+ </xsl:stylesheet>
+"""
+INICIAL="""<a><b>Text</b></a>
+"""
+
 class Validator(object):
     def __init__(self):
         self.main_window=Tk()
@@ -49,12 +61,19 @@ class Validator(object):
         self.text.pack(fill=BOTH,  expand=True, side=LEFT)
         self.text.insert(END, INICIAL)
         self.dtd.insert(END, DTD_INICIAL)
+        self.btn_xslt=Button(self.frame_xml, text="Transformar con XSLT")
+        self.btn_xslt.pack(fill=X,expand=True,  side=BOTTOM)
+        self.btn_xslt.bind("<Button-1>", self.transform_xml_with_xslt)
+        
         self.btn_validate=Button(self.frame_xml, text="Validar con DTD")
         self.btn_validate.pack(fill=X,expand=True,  side=BOTTOM)
         self.btn_validate.bind("<Button-1>", self.validate_dtd)
         self.btn_schema=Button(self.frame_xml, text="Validar con esquema")
         self.btn_schema.pack(fill=X,expand=True,  side=BOTTOM)
         self.btn_schema.bind("<Button-1>", self.validate_schema)
+        
+        
+        
         self.label=Label(self.main_window,text="Messages")
         self.label.pack(side=TOP)
         self.report=Text(self.main_window)
@@ -80,6 +99,7 @@ class Validator(object):
             self.report.insert(END, str(e) )
             return
         self.report.insert(END, "XML procesado sin errores")
+        
     def validate_schema(self, event):
         text=self.text.get(1.0, END)
         texto_dtd=self.dtd.get(1.0,END)
@@ -91,8 +111,6 @@ class Validator(object):
             self.report.insert(END, "El esquema no es XML bien formado\n" )
             self.report.insert(END, str(e) )
         try:
-            
-            print(schema_root)
             schema=etree.XMLSchema(schema_root)
             parser=etree.XMLParser(schema=schema)
             
@@ -102,7 +120,36 @@ class Validator(object):
             return
         self.report.insert(END, "XML procesado sin errores")
         
+    def transform_xml_with_xslt(self, event):
+        texto_xml=self.text.get(1.0, END)
+        texto_xslt=self.dtd.get(1.0,END)
+        self.report.delete(1.0, END)
+        try:
+            #root_element=etree.fromstring(text)
+            raiz_xslt=etree.XML(texto_xslt)
+        except Exception as e:
+            self.report.insert(END, "El XSLT de la izquierda no es XML bien formado\n" )
+            self.report.insert(END, str(e) )
+            return 
+        try:
+            #root_element=etree.fromstring(text)
+            raiz_xml=etree.XML(texto_xml)
+        except Exception as e:
+            self.report.insert(END, "El XML (derecha) no es XML bien formado\n" )
+            self.report.insert(END, str(e) )
+            return
         
+        
+        try:
+            
+            funcion_transfomadora_de_xml_con_xslt=etree.XSLT(raiz_xslt)
+            arbol_resultado=funcion_transfomadora_de_xml_con_xslt(raiz_xml)
+            self.report.insert(END, str(arbol_resultado))
+            return 
+        except Exception as e:
+            self.report.insert(END, str(e) )
+            return
+        self.report.insert(END, "XML procesado sin errores")
         
     def start(self):
         self.main_window.mainloop()
