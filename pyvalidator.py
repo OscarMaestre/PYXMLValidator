@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter.ttk import *
 from lxml import etree
 from io import StringIO
+import string
 
 DTD_INICIAL="""<!ELEMENT listaclientes (cliente+)>
 <!ELEMENT cliente (cif, nombre, diasentrega?)>
@@ -39,7 +40,7 @@ INICIAL="""
 DTD_INICIAL="""<xsl:stylesheet version="1.0"
      xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
      <xsl:template match="/">
-         <foo><xsl:value-of select="/a/b/text()" /></foo>
+         <bar><foo><xsl:value-of select="/a/b/text()" /></foo></bar>
      </xsl:template>
  </xsl:stylesheet>
 """
@@ -144,7 +145,9 @@ class Validator(object):
             
             funcion_transfomadora_de_xml_con_xslt=etree.XSLT(raiz_xslt)
             arbol_resultado=funcion_transfomadora_de_xml_con_xslt(raiz_xml)
-            self.report.insert(END, str(arbol_resultado))
+            arbol_resultado_embellecido=etree.tostring(arbol_resultado, pretty_print=True)
+            #self.report.insert(END, str(arbol_resultado_embellecido))
+            self.report.insert(END, arbol_resultado_embellecido)
             return 
         except Exception as e:
             self.report.insert(END, str(e) )
