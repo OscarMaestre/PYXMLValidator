@@ -121,6 +121,13 @@ class Validator(object):
             return
         self.report.insert(END, "XML procesado sin errores")
         
+    def result_is_html(self, result):
+        contains_html   =   result.find("<html>")
+        contains_body   =   result.find("<body>")
+        if contains_body and contains_html:
+            return True
+        return False
+    
     def transform_xml_with_xslt(self, event):
         texto_xml=self.text.get(1.0, END)
         texto_xslt=self.dtd.get(1.0,END)
@@ -148,11 +155,14 @@ class Validator(object):
             arbol_resultado_embellecido=etree.tostring(arbol_resultado, pretty_print=True)
             #self.report.insert(END, str(arbol_resultado_embellecido))
             self.report.insert(END, arbol_resultado_embellecido)
-            return 
+            self.report.insert(END, "XML procesado sin errores")
+            self.report.insert(END,"Comprobando...")
+            if self.result_is_html ( arbol_resultado_embellecido):
+                self.report.insert(END,"Es html")
+                return 
         except Exception as e:
             self.report.insert(END, str(e) )
             return
-        self.report.insert(END, "XML procesado sin errores")
         
     def start(self):
         self.main_window.mainloop()
