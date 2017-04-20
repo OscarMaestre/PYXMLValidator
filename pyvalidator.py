@@ -47,8 +47,52 @@ DTD_INICIAL="""<xsl:stylesheet version="1.0"
 INICIAL="""<a><b>Text</b></a>
 """
 
+
+DTD_INICIAL="""
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:template match="/">
+        <html>
+            <head><title>Catalogo</title></head>
+            <body>
+                <h1>Autores</h1>
+                <ul>
+                    <xsl:for-each select="//autor">
+                        <xsl:sort select="." order="descending"/>
+                        <li><xsl:value-of select="."/></li>
+                    </xsl:for-each>
+                </ul>
+            </body>
+        </html>
+    </xsl:template>
+</xsl:stylesheet>
+"""
+
+INICIAL="""
+<catalogo>
+    <libro>
+        <title>Don Quijote</title>
+        <autores>
+            <autor>Cervantes</autor>
+            <autor>Otro</autor>
+        </autores>
+    </libro>
+    <libro>
+        <titulo>Historia</titulo>
+        <autores>
+            <autor>Autor 2</autor>
+            <autor>Autor 3</autor>
+        </autores>
+    </libro>
+</catalogo>
+"""
+
+
+DTD_INICIAL=""
+INICIAL=""
 class Validator(object):
     def __init__(self):
+        self.almacenar_en_fichero=True
+        self.nombre_fichero_resultado="resultado_xslt"
         self.main_window=Tk()
         #self.main_window.attributes("-zoomed", True)
         self.main_window.title("Validador XML")
@@ -121,11 +165,19 @@ class Validator(object):
             return
         self.report.insert(END, "XML procesado sin errores")
         
+        
+    def bytes_a_cadena(self, bytes, codificacion="utf-8"):
+        result=str(bytes, "utf-8")
+        return result
+    
     def result_is_html(self, result):
+        result=self.bytes_a_cadena(result)
         contains_html   =   result.find("<html>")
         contains_body   =   result.find("<body>")
-        if contains_body and contains_html:
+        if contains_body!=-1 and contains_html!=-1:
+            print("Es html")
             return True
+        print("Es xml")
         return False
     
     def transform_xml_with_xslt(self, event):
@@ -155,10 +207,17 @@ class Validator(object):
             arbol_resultado_embellecido=etree.tostring(arbol_resultado, pretty_print=True)
             #self.report.insert(END, str(arbol_resultado_embellecido))
             self.report.insert(END, arbol_resultado_embellecido)
-            self.report.insert(END, "XML procesado sin errores")
-            self.report.insert(END,"Comprobando...")
-            if self.result_is_html ( arbol_resultado_embellecido):
-                self.report.insert(END,"Es html")
+            
+            nombre_fichero=self.nombre_fichero_resultado
+            if self.almacenar_en_fichero:
+                if self.result_is_html ( arbol_resultado_embellecido):
+                    nombre_fichero+=".html"
+                else:
+                    nombre_fichero+=".xml"
+                fichero=open(nombre_fichero,"w")
+                cad_resultado=self.bytes_a_cadena(arbol_resultado_embellecido)
+                fichero.write(cad_resultado)
+                fichero.close()
                 return 
         except Exception as e:
             self.report.insert(END, str(e) )
