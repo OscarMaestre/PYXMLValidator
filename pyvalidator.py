@@ -3,6 +3,8 @@
 from tkinter import *
 from tkinter.scrolledtext import *
 from tkinter.ttk import *
+from tkinter.font import Font
+
 
 from lxml import etree
 from io import StringIO
@@ -98,7 +100,9 @@ class Validator(object):
         self.main_window=Tk()
         #self.main_window.attributes("-zoomed", True)
         self.main_window.title("Validador XML")
+        self.fuente=Font(family="Courier", size=12, weight="bold")
         self.buildUI()
+        self.configurar_tipos_de_letra()
     def buildUI(self):
         self.frame_xml=Frame(self.main_window)
         self.frame_xml.pack(fill=BOTH, expand=True, side=TOP)
@@ -119,14 +123,18 @@ class Validator(object):
         self.btn_schema.pack(fill=X,expand=True,  side=BOTTOM)
         self.btn_schema.bind("<Button-1>", self.validate_schema)
         
-        
-        
         self.label=Label(self.main_window,text="Messages")
         self.label.pack(side=TOP)
         self.report=ScrolledText(self.main_window)
         self.report.pack(side=TOP, expand=True, fill=BOTH)
         self.report.insert(END, "Reports")
         
+    def configurar_tipos_de_letra(self):
+        controles_con_tipo_de_letra_grande=[
+            self.report, self.text, self.dtd
+        ]
+        for c in controles_con_tipo_de_letra_grande:
+            c.configure(font=self.fuente)
         
     def validate_dtd(self, event):
         text=self.text.get(1.0, END)
