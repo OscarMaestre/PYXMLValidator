@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 #coding=utf-8
 from tkinter import *
+from tkinter.scrolledtext import *
 from tkinter.ttk import *
+
 from lxml import etree
 from io import StringIO
 import string
@@ -100,9 +102,9 @@ class Validator(object):
     def buildUI(self):
         self.frame_xml=Frame(self.main_window)
         self.frame_xml.pack(fill=BOTH, expand=True, side=TOP)
-        self.dtd=Text(self.frame_xml, width=50, height=30)
+        self.dtd=ScrolledText(self.frame_xml, width=50, height=30)
         self.dtd.pack(fill=BOTH, expand=True,  side=LEFT)
-        self.text=Text(self.frame_xml, width=50, height=30)
+        self.text=ScrolledText(self.frame_xml, width=50, height=30)
         self.text.pack(fill=BOTH,  expand=True, side=LEFT)
         self.text.insert(END, INICIAL)
         self.dtd.insert(END, DTD_INICIAL)
@@ -121,9 +123,11 @@ class Validator(object):
         
         self.label=Label(self.main_window,text="Messages")
         self.label.pack(side=TOP)
-        self.report=Text(self.main_window)
+        self.report=ScrolledText(self.main_window)
         self.report.pack(side=TOP, expand=True, fill=BOTH)
         self.report.insert(END, "Reports")
+        
+        
     def validate_dtd(self, event):
         text=self.text.get(1.0, END)
         texto_dtd=self.dtd.get(1.0,END)
