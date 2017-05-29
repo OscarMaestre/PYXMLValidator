@@ -9,7 +9,7 @@ Este programa permite
 * Escribir un XML y validarlo según un XML Schema.
 * Usar un XML como archivo de origen, escribir reglas XSLT y transformar dicho archivo en otro archivo.
 
-En todos los casos **recuerda que no hay que escribir las instrucciones de procesamiento del tipo <?xml version="1.0"?>**
+En todos los casos **recuerda que no hay que escribir las instrucciones de procesamiento del tipo xml version="1.0" **
 
 ## Validación con XML Schema
 
