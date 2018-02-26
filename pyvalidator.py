@@ -103,14 +103,31 @@ class Validator(object):
         self.fuente=Font(family="Courier", size=12, weight="bold")
         self.buildUI()
         self.configurar_tipos_de_letra()
+    def boton_derecho_dtd(self, evento):
+        self.dtd.delete(1.0, END)
+        texto_portapapeles=self.main_window.clipboard_get()
+        self.dtd.insert(END, texto_portapapeles)
+        
+        
+    def boton_derecho_xml(self, evento):
+        self.text.delete(1.0, END)
+        texto_portapapeles=self.main_window.clipboard_get()
+        self.text.insert(END, texto_portapapeles)
+        
+        
     def buildUI(self):
         self.frame_xml=Frame(self.main_window)
         self.frame_xml.pack(fill=BOTH, expand=True, side=TOP)
+        
         self.dtd=ScrolledText(self.frame_xml, width=50, height=30)
         self.dtd.pack(fill=BOTH, expand=True,  side=LEFT)
+        self.dtd.bind("<Button-3>", self.boton_derecho_dtd)
+        self.dtd.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado")
         self.text=ScrolledText(self.frame_xml, width=50, height=30)
         self.text.pack(fill=BOTH,  expand=True, side=LEFT)
         self.text.insert(END, INICIAL)
+        self.text.bind("<Button-3>", self.boton_derecho_xml)
+        self.text.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado")
         self.dtd.insert(END, DTD_INICIAL)
         self.btn_xslt=Button(self.frame_xml, text="Transformar con XSLT")
         self.btn_xslt.pack(fill=X,expand=True,  side=BOTTOM)
