@@ -7,6 +7,8 @@ from tkinter.font import Font
 
 
 from lxml import etree
+from lxml.etree import tostring
+
 from io import StringIO
 import string
 
@@ -113,7 +115,8 @@ class Validator(object):
         self.text.delete(1.0, END)
         texto_portapapeles=self.main_window.clipboard_get()
         self.text.insert(END, texto_portapapeles)
-        
+    
+    
         
     def buildUI(self):
         self.frame_xml=Frame(self.main_window)
@@ -122,13 +125,17 @@ class Validator(object):
         self.dtd=ScrolledText(self.frame_xml, width=50, height=30)
         self.dtd.pack(fill=BOTH, expand=True,  side=LEFT)
         self.dtd.bind("<Button-3>", self.boton_derecho_dtd)
-        self.dtd.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado")
+        self.dtd.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado (debería ser una DTD o XML Schema o XPath")
         self.text=ScrolledText(self.frame_xml, width=50, height=30)
         self.text.pack(fill=BOTH,  expand=True, side=LEFT)
         self.text.insert(END, INICIAL)
         self.text.bind("<Button-3>", self.boton_derecho_xml)
-        self.text.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado")
+        self.text.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado (debería ser XML)")
         self.dtd.insert(END, DTD_INICIAL)
+        
+        self.btn_xpath=Button(self.frame_xml, text="Evaluar con XPath")
+        self.btn_xpath.pack(fill=X, expand=True, side=BOTTOM)
+        self.btn_xpath.bind("<Button-1>", self.evaluate_xpath)
         self.btn_xslt=Button(self.frame_xml, text="Transformar con XSLT")
         self.btn_xslt.pack(fill=X,expand=True,  side=BOTTOM)
         self.btn_xslt.bind("<Button-1>", self.transform_xml_with_xslt)
@@ -173,6 +180,32 @@ class Validator(object):
             self.report.insert(END, str(e) )
             return
         self.report.insert(END, "XML procesado sin errores")
+    
+    
+    def get_xml_desde_lista(self, lista):
+        elementos=[]
+        for e in lista:
+            texto=tostring(e, pretty_print=True).decode("utf-8")
+            elementos.append(texto)
+        return "\n".join(elementos)
+    
+    def evaluate_xpath(self, evento):
+        print ("Evaluando XPath")
+        text=self.text.get(1.0, END)
+        texto_xpath=self.dtd.get(1.0,END)
+        self.report.delete(1.0, END)
+        print("XPATH:"+texto_xpath)
+        try:
+            xml=etree.XML(text)
+            resultado_xpath=xml.xpath(texto_xpath)
+            print(resultado_xpath)
+            
+            if isinstance(resultado_xpath, list):
+                xml=self.get_xml_desde_lista(resultado_xpath)
+                self.report.insert(END, xml)
+        except Exception as e:
+            self.report.insert(END, "El XML de la derecha no está bien formado\n" )
+            self.report.insert(END, str(e) )
         
     def validate_schema(self, event):
         text=self.text.get(1.0, END)
