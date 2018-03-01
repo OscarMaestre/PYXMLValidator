@@ -74,27 +74,25 @@ DTD_INICIAL="""
 """
 
 INICIAL="""
-<catalogo>
-    <libro>
-        <title>Don Quijote</title>
-        <autores>
-            <autor>Cervantes</autor>
-            <autor>Otro</autor>
-        </autores>
-    </libro>
-    <libro>
-        <titulo>Historia</titulo>
-        <autores>
-            <autor>Autor 2</autor>
-            <autor>Autor 3</autor>
-        </autores>
-    </libro>
-</catalogo>
+<inventario>
+    <producto codigo="AAA-111">
+        <nombre>Teclado</nombre>
+        <peso unidad="g">480</peso>
+    </producto>
+    <producto codigo="ACD-981">
+        <nombre>Monitor</nombre>
+        <peso unidad="kg">1.8</peso>
+    </producto>
+    <producto codigo="DEZ-138">
+        <nombre>Raton</nombre>
+        <peso unidad="g">50</peso>
+    </producto>
+</inventario>
 """
 
 
-DTD_INICIAL=""
-INICIAL=""
+DTD_INICIAL="/inventario/producto[1]"
+#INICIAL=""
 class Validator(object):
     def __init__(self):
         self.almacenar_en_fichero=True
@@ -105,6 +103,7 @@ class Validator(object):
         self.fuente=Font(family="Courier", size=12, weight="bold")
         self.buildUI()
         self.configurar_tipos_de_letra()
+        
     def boton_derecho_dtd(self, evento):
         self.dtd.delete(1.0, END)
         texto_portapapeles=self.main_window.clipboard_get()
@@ -125,12 +124,12 @@ class Validator(object):
         self.dtd=ScrolledText(self.frame_xml, width=50, height=30)
         self.dtd.pack(fill=BOTH, expand=True,  side=LEFT)
         self.dtd.bind("<Button-3>", self.boton_derecho_dtd)
-        self.dtd.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado (debería ser una DTD o XML Schema o XPath")
+        #self.dtd.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado (debería ser una DTD o XML Schema o XPath")
         self.text=ScrolledText(self.frame_xml, width=50, height=30)
         self.text.pack(fill=BOTH,  expand=True, side=LEFT)
         self.text.insert(END, INICIAL)
         self.text.bind("<Button-3>", self.boton_derecho_xml)
-        self.text.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado (debería ser XML)")
+        #self.text.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado (debería ser XML)")
         self.dtd.insert(END, DTD_INICIAL)
         
         self.btn_xpath=Button(self.frame_xml, text="Evaluar con XPath")
@@ -182,29 +181,50 @@ class Validator(object):
         self.report.insert(END, "XML procesado sin errores")
     
     
-    def get_xml_desde_lista(self, lista):
+    
+    def get_xml_elemento(self, elemento):
+        
+        texto=tostring(elemento, pretty_print=True).decode("utf-8")
+        return texto
+    
+    
+    def get_xml_desde_lista_elementos(self, lista):
         elementos=[]
         for e in lista:
-            texto=tostring(e, pretty_print=True).decode("utf-8")
+            texto=self.get_xml_elemento(e)
             elementos.append(texto)
         return "\n".join(elementos)
     
+    
+    
+    def get_resultado(self, resultado_xpath):
+        xml=""
+        if isinstance(resultado_xpath, list):
+            if isinstance(resultado_xpath[0], etree._Element):
+                xml=self.get_xml_desde_lista_elementos(resultado_xpath)
+            else:
+                xml="\n".join(resultado_xpath)
+                
+        if isinstance(resultado_xpath, etree._Element):
+            xml=self.get_xml_elemento(resultado_xpath)
+        
+        return xml
     def evaluate_xpath(self, evento):
         print ("Evaluando XPath")
         text=self.text.get(1.0, END)
         texto_xpath=self.dtd.get(1.0,END)
         self.report.delete(1.0, END)
-        print("XPATH:"+texto_xpath)
+        
         try:
             xml=etree.XML(text)
             resultado_xpath=xml.xpath(texto_xpath)
             print(resultado_xpath)
             
-            if isinstance(resultado_xpath, list):
-                xml=self.get_xml_desde_lista(resultado_xpath)
-                self.report.insert(END, xml)
+            xml=self.get_resultado(resultado_xpath)
+            self.report.insert(END, xml)
+                
         except Exception as e:
-            self.report.insert(END, "El XML de la derecha no está bien formado\n" )
+            self.report.insert(END, "El XML de la derecha no está bien formado o el XPath es incorrecto\n" )
             self.report.insert(END, str(e) )
         
     def validate_schema(self, event):
