@@ -91,8 +91,8 @@ INICIAL="""
 """
 
 
-DTD_INICIAL="/inventario/producto[1]"
-#INICIAL=""
+#DTD_INICIAL="/inventario/producto[1]"
+INICIAL=""
 class Validator(object):
     def __init__(self):
         self.almacenar_en_fichero=True
@@ -124,13 +124,13 @@ class Validator(object):
         self.dtd=ScrolledText(self.frame_xml, width=50, height=30)
         self.dtd.pack(fill=BOTH, expand=True,  side=LEFT)
         self.dtd.bind("<Button-3>", self.boton_derecho_dtd)
-        #self.dtd.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado (debería ser una DTD o XML Schema o XPath")
+        self.dtd.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado (debería ser una DTD o XML Schema o XPath)")
         self.text=ScrolledText(self.frame_xml, width=50, height=30)
         self.text.pack(fill=BOTH,  expand=True, side=LEFT)
         self.text.insert(END, INICIAL)
         self.text.bind("<Button-3>", self.boton_derecho_xml)
-        #self.text.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado (debería ser XML)")
-        self.dtd.insert(END, DTD_INICIAL)
+        self.text.insert(END, "Pulsa aquí con el botón derecho para borrar y pegar lo que tuvieses copiado (debería ser XML)")
+        #self.dtd.insert(END, DTD_INICIAL)
         
         self.btn_xpath=Button(self.frame_xml, text="Evaluar con XPath")
         self.btn_xpath.pack(fill=X, expand=True, side=BOTTOM)
@@ -146,11 +146,11 @@ class Validator(object):
         self.btn_schema.pack(fill=X,expand=True,  side=BOTTOM)
         self.btn_schema.bind("<Button-1>", self.validate_schema)
         
-        self.label=Label(self.main_window,text="Messages")
+        self.label=Label(self.main_window,text="Mensajes")
         self.label.pack(side=TOP)
         self.report=ScrolledText(self.main_window)
         self.report.pack(side=TOP, expand=True, fill=BOTH)
-        self.report.insert(END, "Reports")
+        self.report.insert(END, "Informes")
         
     def configurar_tipos_de_letra(self):
         controles_con_tipo_de_letra_grande=[
