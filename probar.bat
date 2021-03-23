@@ -1,0 +1,1 @@
+validador_cli.py dtd c:\Users\ogomez\Documents\deckard\hoy\dam1\t0401-dtds\casosprueba c:\Users\ogomez\Documents\deckard\hoy\dam1\t0401-dtds\casosprueba "C:\Users\ogomez\Downloads\entregados\Abraham Baos García_601782_assignsubmission_file_\abraham_baos.dtd"
