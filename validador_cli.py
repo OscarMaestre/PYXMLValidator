@@ -45,7 +45,7 @@ def get_ficheros_en_carpeta(carpeta):
     ficheros = [join(carpeta, f) for f in listdir(carpeta) if isfile(join(carpeta, f))]
     return ficheros
 
-def validar_con_dtd(argv, funcion_validacion):
+def validar(argv, funcion_validacion):
     carpeta_casos_buenos=argv[2]
     carpeta_casos_malos =argv[3]
     fichero_dtd_o_esquema=argv[4]
@@ -59,10 +59,8 @@ def validar_con_dtd(argv, funcion_validacion):
         #print(texto_caso_bueno)
 
 
-mecanismo_a_validar=sys.argv[1]
+FICHERO_XSD=sys.argv[1]
+FICHERO_DTD=sys.argv[2]
 
-if sys.argv[1]=="xsd":
-    validar_con_xsd(sys.argv, validar_xsd)
-
-if sys.argv[1]=="dtd":
-    validar_con_dtd(sys.argv, validar_dtd)
+configuracion1=dict()
+configuracion1["fichero"]=
